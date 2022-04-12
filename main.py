@@ -1,5 +1,6 @@
 import random
 import time
+from Card import Card
 
 
 def print_hide_dealer():
@@ -53,6 +54,33 @@ def draw_card(hand):
     hand.append(play_deck[rand_card])
     play_deck.pop(rand_card)
 
+
+deck_skele = [Card("Ace", "Clubs", 11), Card("Ace", "Diamonds", 11),
+            Card("Ace", "Hearts", 11), Card("Ace", "Spades", 11),
+            Card("Two", "Clubs", 2), Card("Ace", "Diamonds", 2),
+            Card("Ace", "Hearts", 2), Card("Ace", "Spades", 2),
+            Card("Three", "Clubs", 3), Card("Three", "Diamonds", 3),
+            Card("Three", "Hearts", 3), Card("Three", "Spades", 3),
+            Card("Four", "Clubs", 4), Card("Four", "Diamonds", 4),
+            Card("Four", "Hearts", 4), Card("Four", "Spades", 4),
+            Card("Five", "Clubs", 5), Card("Five", "Diamonds", 5),
+            Card("Five", "Hearts", 5), Card("Five", "Spades", 5),
+            Card("Six", "Clubs", 6), Card("Six", "Diamonds", 6),
+            Card("Six", "Hearts", 6), Card("Six", "Spades", 6),
+            Card("Seven", "Clubs", 7), Card("Seven", "Diamonds", 7),
+            Card("Seven", "Hearts", 7), Card("Seven", "Spades", 7),
+            Card("Eight", "Clubs", 8), Card("Eight", "Diamonds", 8),
+            Card("Eight", "Hearts", 8), Card("Eight", "Spades", 8),
+            Card("Nine", "Clubs", 9), Card("Nine", "Diamonds", 9),
+            Card("Nine", "Hearts", 9), Card("Nine", "Spades", 9),
+            Card("Ten", "Clubs", 10), Card("Ten", "Diamonds", 10),
+            Card("Ten", "Hearts", 10), Card("Ten", "Spades", 10),
+            Card("Jack", "Clubs", 10), Card("Jack", "Diamonds", 10),
+            Card("Jack", "Hearts", 10), Card("Jack", "Spades", 10),
+            Card("Queen", "Clubs", 10), Card("Queen", "Diamonds", 10),
+            Card("Queen", "Hearts", 10), Card("Queen", "Spades", 10),
+            Card("King", "Clubs", 10), Card("King", "Diamonds", 10),
+            Card("King", "Hearts", 10), Card("King", "Spades", 10)]
 
 state = 0
 deck_skeleton = ['♣A', '♣2', '♣3', '♣4', '♣5', '♣6', '♣7', '♣8', '♣9', '♣10', '♣J', '♣Q', '♣K',
@@ -189,7 +217,7 @@ while game_running:
             print(f"Dealer wins! You lose {player_bet}\n")
             player_balance -= player_bet
             state = 0
-        elif dealer_score == player_socre:
+        elif dealer_score == player_score:
             print("Push!")
             state = 0
         else:
