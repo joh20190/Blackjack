@@ -68,16 +68,13 @@ def draw_card(hand):
     play_deck.pop(rand_card)
 
 
-h1 = Hand([Card("Ace", "Spades", [1]), Card("Jack", "Clubs", [10])], 0)
-h2 = Hand([Card("Five", "Hearts", [5]), Card("Three", "Clubs", [3])], 0)
+h1 = Hand([Card("Ace", "Spades", [1, 11]), Card("Jack", "Clubs", [10]), Card("Eight", "Diamonds", [8])])
+h2 = Hand([Card("Five", "Hearts", [5]), Card("Three", "Clubs", [3])])
 
-h1.print()
-h2.print()
-
-transfer_card(h1, h2, 0, 1)
-
-h1.print()
-h2.print()
+h1.add_up_hand()
+print(h1.values)
+print(h2.add_up_hand())
+print(h2.values)
 
 deck_skele = Hand([Card("Ace", "Clubs", [1, 11]), Card("Ace", "Diamonds", [1, 11]),
                    Card("Ace", "Hearts", [1, 11]), Card("Ace", "Spades", [1, 11]),
