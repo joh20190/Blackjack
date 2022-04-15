@@ -71,10 +71,8 @@ def draw_card(hand):
 h1 = Hand([Card("Ace", "Spades", [1, 11]), Card("Jack", "Clubs", [10]), Card("Eight", "Diamonds", [8])])
 h2 = Hand([Card("Five", "Hearts", [5]), Card("Three", "Clubs", [3])])
 
-h1.add_up_hand()
-print(h1.values)
-print(h2.add_up_hand())
-print(h2.values)
+print(h1)
+print(h2)
 
 deck_skele = Hand([Card("Ace", "Clubs", [1, 11]), Card("Ace", "Diamonds", [1, 11]),
                    Card("Ace", "Hearts", [1, 11]), Card("Ace", "Spades", [1, 11]),
@@ -102,7 +100,7 @@ deck_skele = Hand([Card("Ace", "Clubs", [1, 11]), Card("Ace", "Diamonds", [1, 11
                    Card("Queen", "Hearts", [10]), Card("Queen", "Spades", [10]),
                    Card("King", "Clubs", [10]), Card("King", "Diamonds", [10]),
                    Card("King", "Hearts", [10]), Card("King", "Spades", [10]),
-                   ], 0)
+                   ])
 
 state = 0
 deck_skeleton = ['♣A', '♣2', '♣3', '♣4', '♣5', '♣6', '♣7', '♣8', '♣9', '♣10', '♣J', '♣Q', '♣K',
@@ -124,7 +122,8 @@ print(f"Hi {player_name}, welcome to Blackjack!")
 
 while game_running:
     while state == 0:  # Betting
-        player_hand = []
+        player_hand = Hand()
+
         dealer_hand = []
         play_deck = deck_skeleton.copy()
 
