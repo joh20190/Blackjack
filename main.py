@@ -2,6 +2,7 @@ import random
 import time
 from Card import Card
 from Hand import Hand
+from Player import Player
 
 
 def print_hide_dealer():
@@ -68,12 +69,6 @@ def draw_card(hand):
     play_deck.pop(rand_card)
 
 
-h1 = Hand([Card("Ace", "Spades", [1, 11]), Card("Jack", "Clubs", [10]), Card("Eight", "Diamonds", [8])])
-h2 = Hand([Card("Five", "Hearts", [5]), Card("Three", "Clubs", [3])])
-
-print(h1)
-print(h2)
-
 deck_skele = Hand([Card("Ace", "Clubs", [1, 11]), Card("Ace", "Diamonds", [1, 11]),
                    Card("Ace", "Hearts", [1, 11]), Card("Ace", "Spades", [1, 11]),
                    Card("Two", "Clubs", [2]), Card("Ace", "Diamonds", [2]),
@@ -109,7 +104,6 @@ deck_skeleton = ['♣A', '♣2', '♣3', '♣4', '♣5', '♣6', '♣7', '♣8',
                  '♠A', '♠2', '♠3', '♠4', '♠5', '♠6', '♠7', '♠8', '♠9', '♠10', '♠J', '♠Q', '♠K']
 ten_value_cards = ['♣10', '♣J', '♣Q', '♣K', '♦10', '♦J', '♦Q', '♦K', '♥10', '♥J', '♥Q', '♥K', '♠10', '♠J', '♠Q', '♠K']
 
-player_balance = 1000
 player_has_bj = False
 dealer_has_bj = False
 play_deck = []
@@ -119,18 +113,19 @@ game_running = True
 
 player_name = input("Enter your name: ")
 print(f"Hi {player_name}, welcome to Blackjack!")
+p1 = Player(player_name, 1000, Hand(), 0)
+dealer = Player("dealer", 1000, Hand(), 0)
 
 while game_running:
     while state == 0:  # Betting
-        player_hand = Hand()
 
         dealer_hand = []
-        play_deck = deck_skeleton.copy()
+        play_deck = deck_skele
 
-        print(f"You have ${player_balance} in your balance.")
+        print(f"You have ${p1.balance} in your balance.")
 
-        player_bet = int(round(float(input("Enter your bet for the round: "))))
-        while (player_bet % 1) != 0 or player_bet < 0 or player_bet > player_balance:
+        p1.bet = int(round(float(input("Enter your bet for the round: "))))
+        while (p1.bet % 1) != 0 or p1.bet < 0 or p1.bet > p1.balance:
             print("Sorry, that is not a valid bet.")
             player_bet = int(input("Enter your bet for the round: "))
 
@@ -138,10 +133,10 @@ while game_running:
 
     while state == 1:  # Dealing
         for i in range(0, 2):
-            draw_card(player_hand)
-            draw_card(dealer_hand)
+            transfer_card(play_deck, p1.hand)
+            transfer_card(dealer_hand, dealer.hand)
 
-        print_hide_dealer()
+        print(dealer.hand)
         state = 2
 
     while state == 2:  # Check for natural blackjacks
@@ -164,14 +159,14 @@ while game_running:
             else:
                 print_hands()
                 print(f"Blackjack! {player_name} wins ${player_bet * 1.5}.\n")
-                player_balance += (player_bet * 1.5)
+                p1.balance += (player_bet * 1.5)
                 state = 0
                 break
 
         if dealer_has_bj:
             print_hands()
             print("Blackjack! Dealer wins.\n")
-            player_balance -= player_bet
+            p1.balance -= player_bet
             state = 0
             break
 
@@ -193,13 +188,13 @@ while game_running:
         if player_score == 21:
             print_hands()
             print(f"Blackjack! {player_name} wins ${player_bet * 1.5}.\n")
-            player_balance += (player_bet * 1.5)
+            p1.balance += (player_bet * 1.5)
             state = 0
 
         elif player_score > 21:
             print(f"Your total is {add_up_hand(player_hand)}.")
             print(f"Bust! You lose ${player_bet}.\n")
-            player_balance -= player_bet
+            p1.balance -= player_bet
             state = 0
         else:
             if player_decision == "stand":
@@ -224,24 +219,24 @@ while game_running:
                     print("Push!")
                 else:
                     print(f"You lose ${player_bet}.\n")
-                    player_balance -= (player_bet * 1.5)
+                    p1.balance -= (player_bet * 1.5)
                 state = 0
             elif dealer_score > 21:
                 print_hands()
                 print("Dealer Bust!")
-                player_balance += player_bet
+                p1.balance += player_bet
                 state = 0
 
     while state == 5:  # Showdown
         dealer_score = add_up_hand(dealer_hand)
         if dealer_score > player_score:
             print(f"Dealer wins! You lose {player_bet}\n")
-            player_balance -= player_bet
+            p1.balance -= player_bet
             state = 0
         elif dealer_score == player_score:
             print("Push!")
             state = 0
         else:
             print(f"You win {player_bet} dollars!\n")
-            player_balance += player_bet
+            p1.balance += player_bet
             state = 0
