@@ -2,7 +2,7 @@ import random
 
 
 class Hand:
-    def add_up_hand(self):
+    def add_up_hand(self): # TODO: Probably best to make this function return the highest value under 21 in values
         for card in self.cards:
             for idx, value in enumerate(card.values):
                 try:

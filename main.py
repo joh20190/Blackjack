@@ -13,42 +13,46 @@ def print_hide_dealer():
         else:
             print(" " + dealer_hand[i] + " ", end="")
 
-    print(f"\n{player_name}'s Hand:", end="")
-    for i in range(0, len(player_hand)):
-        print(" " + player_hand[i] + " ", end="")
-    print('\n')
+    for player in players:
+        print(f"\n{player.name}'s Hand:", end="")
+
+        for i in range(0, len(player.hand)):
+            print(" " + player.hand[i] + " ", end="")
+        print('\n')
 
 
 def print_hands():
     print("Dealer's Hand:", end="")
-    for i in range(0, len(dealer_hand)):
+    for i in range(0, len(dealer.hand)):
         print(" " + dealer_hand[i] + " ", end="")
 
-    print(f"\n{player_name}'s Hand:", end="")
-    for i in range(0, len(player_hand)):
-        print(" " + player_hand[i] + " ", end="")
-    print('\n')
+    for player in players:
+        print(f"\n{player.name}'s Hand:", end="")
+
+        for i in range(0, len(player.hand)):
+            print(" " + player.hand[i] + " ", end="")
+        print('\n')
 
 
-def add_up_hand(hand):
-    total_11 = 0
-    total_1 = 0
-    for card_add in hand:
-        if card_add == '♣A' or card_add == '♦A' or card_add == '♥A' or card_add == '♠A':
-            total_1 += 1
-            total_11 += 11
-        elif card_add in ten_value_cards:
-            total_1 += 10
-            total_11 += 10
-        else:
-            total_1 += int(card_add[1])
-            total_11 += int(card_add[1])
-    if total_11 <= 21:
-        print(total_11)
-        return total_11
-    else:
-        print(total_1)
-        return total_1
+#def add_up_hand(hand):
+    #total_11 = 0
+    #total_1 = 0
+    #for card_add in hand:
+        #if card_add == '♣A' or card_add == '♦A' or card_add == '♥A' or card_add == '♠A':
+            #total_1 += 1
+            #total_11 += 11
+        #elif card_add in ten_value_cards:
+            #total_1 += 10
+            #total_11 += 10
+        #else:
+            #total_1 += int(card_add[1])
+            #total_11 += int(card_add[1])
+    #if total_11 <= 21:
+        #print(total_11)
+        #return total_11
+    #else:
+        #print(total_1)
+        #return total_1
 
 
 def transfer_card(hand_1, hand_2, first_idx=None, second_idx=None):
@@ -64,9 +68,9 @@ def transfer_card(hand_1, hand_2, first_idx=None, second_idx=None):
 
 
 def draw_card(hand):
-    rand_card = random.randint(0, len(play_deck) - 1)
-    hand.append(play_deck[rand_card])
-    play_deck.pop(rand_card)
+    rand_card = random.randint(0, len(play_deck.cards) - 1)
+    hand.append(play_deck.cards[rand_card])
+    play_deck.cards.pop(rand_card)
 
 
 deck_skele = Hand([Card("Ace", "Clubs", [1, 11]), Card("Ace", "Diamonds", [1, 11]),
@@ -97,7 +101,6 @@ deck_skele = Hand([Card("Ace", "Clubs", [1, 11]), Card("Ace", "Diamonds", [1, 11
                    Card("King", "Hearts", [10]), Card("King", "Spades", [10]),
                    ])
 
-state = 0
 deck_skeleton = ['♣A', '♣2', '♣3', '♣4', '♣5', '♣6', '♣7', '♣8', '♣9', '♣10', '♣J', '♣Q', '♣K',
                  '♦A', '♦2', '♦3', '♦4', '♦5', '♦6', '♦7', '♦8', '♦9', '♦10', '♦J', '♦Q', '♦K',
                  '♥A', '♥2', '♥3', '♥4', '♥5', '♥6', '♥7', '♥8', '♥9', '♥10', '♥J', '♥Q', '♥K',
@@ -106,20 +109,20 @@ ten_value_cards = ['♣10', '♣J', '♣Q', '♣K', '♦10', '♦J', '♦Q', '�
 
 player_has_bj = False
 dealer_has_bj = False
-play_deck = []
-player_hand = []
-dealer_hand = []
 game_running = True
 
-player_name = input("Enter your name: ")
-print(f"Hi {player_name}, welcome to Blackjack!")
-p1 = Player(player_name, 1000, Hand(), 0)
+p1_name = input("Enter your name: ")
+print(f"Hi {p1_name}, welcome to Blackjack!")
+players = []
+p1 = Player(p1_name, 1000, Hand(), 0)
 dealer = Player("dealer", 1000, Hand(), 0)
+players.append(p1)
 
+state = 0
 while game_running:
     while state == 0:  # Betting
 
-        dealer_hand = []
+        dealer.hand = []
         play_deck = deck_skele
 
         print(f"You have ${p1.balance} in your balance.")
@@ -133,21 +136,27 @@ while game_running:
 
     while state == 1:  # Dealing
         for i in range(0, 2):
-            transfer_card(play_deck, p1.hand)
-            transfer_card(dealer_hand, dealer.hand)
+            transfer_card(play_deck.cards, p1.hand)
+            transfer_card(play_deck.cards, dealer.hand)
 
         print(dealer.hand)
         state = 2
 
     while state == 2:  # Check for natural blackjacks
-        if add_up_hand(dealer_hand) == 21:
-            dealer_has_bj = True
-        else:
+        dealer.hand.add_up_hand()
+        for total in dealer.hand.values:
+            if total == 21:
+                dealer_has_bj = True
+
+        if not dealer_has_bj:
             dealer_has_bj = False
 
-        if add_up_hand(player_hand) == 21:
-            player_has_bj = True
-        else:
+        p1.hand.add_up_hand()
+        for total in p1.hand.values:
+            if total == 21:
+                player_has_bj = True
+
+        if not player_has_bj:
             player_has_bj = False
 
         if player_has_bj:
@@ -158,7 +167,7 @@ while game_running:
                 break
             else:
                 print_hands()
-                print(f"Blackjack! {player_name} wins ${player_bet * 1.5}.\n")
+                print(f"Blackjack! {p1_name} wins ${player_bet * 1.5}.\n")
                 p1.balance += (player_bet * 1.5)
                 state = 0
                 break
@@ -172,8 +181,9 @@ while game_running:
 
         state = 3
 
+# TODO: Fix state 3 and onward
     while state == 3:  # Player makes play decision
-        player_score = add_up_hand(player_hand)
+        player_score = add_up_hand(p1.hand)
         print(f"Your total is {player_score}")
         player_decision = \
             (input("Would you like to hit or stand? (Type 'hit' or 'stand' and press enter): ")).lower().strip()
@@ -181,18 +191,18 @@ while game_running:
         time.sleep(0.5)
 
         if player_decision == "hit":
-            draw_card(player_hand)
+            draw_card(p1.hand)
         print_hide_dealer()
-        player_score = add_up_hand(player_hand)
+        player_score = add_up_hand(p1.hand)
 
         if player_score == 21:
             print_hands()
-            print(f"Blackjack! {player_name} wins ${player_bet * 1.5}.\n")
+            print(f"Blackjack! {p1_name} wins ${player_bet * 1.5}.\n")
             p1.balance += (player_bet * 1.5)
             state = 0
 
         elif player_score > 21:
-            print(f"Your total is {add_up_hand(player_hand)}.")
+            print(f"Your total is {add_up_hand(p1.hand)}.")
             print(f"Bust! You lose ${player_bet}.\n")
             p1.balance -= player_bet
             state = 0
