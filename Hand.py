@@ -2,7 +2,7 @@ import random
 
 
 class Hand:
-    def add_up_hand(self): # TODO: Probably best to make this function return the highest value under 21 in values
+    def update_values(self):  # TODO this should still probably return the max value.. idk how I used it before
         for card in self.cards:
             for idx, value in enumerate(card.values):
                 try:
@@ -12,6 +12,10 @@ class Hand:
                     self.values[idx] += value
 
         self.values.sort()
+
+    def get_score(self):
+        pass
+        # TODO finish function
 
     def __init__(self, cards=None, values=None):
         if values is None:
@@ -31,5 +35,3 @@ class Hand:
             return_string += card.__str__() + " "
 
         return return_string
-
-
