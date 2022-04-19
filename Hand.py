@@ -2,7 +2,7 @@ import random
 
 
 class Hand:
-    def update_values(self):  # TODO this should still probably return the max value.. idk how I used it before
+    def update_values(self):
         for card in self.cards:
             for idx, value in enumerate(card.values):
                 try:
@@ -12,6 +12,12 @@ class Hand:
                     self.values[idx] += value
 
         self.values.sort()
+        maximum = 0
+        for score in self.values:
+            if score > maximum >= 21:
+                maximum = score
+
+        return maximum
 
     def get_score(self):
         pass

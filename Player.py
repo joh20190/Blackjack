@@ -5,3 +5,7 @@ class Player:
         self.hand = hand
         self.bet = bet
 
+    def __str__(self):
+        pass
+    # TODO: complete function
+

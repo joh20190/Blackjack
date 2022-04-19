@@ -5,35 +5,6 @@ from Hand import Hand
 from Player import Player
 
 
-def print_hide_dealer():
-    print("\nDealer's Hand:", end="")
-    for i in range(0, len(dealer_hand)):
-        if i == 1:
-            print(' Hidden ', end="")
-        else:
-            print(" " + dealer_hand[i] + " ", end="")
-
-    for player in players:
-        print(f"\n{player.name}'s Hand:", end="")
-
-        for i in range(0, len(player.hand)):
-            print(" " + player.hand[i] + " ", end="")
-        print('\n')
-
-
-def print_hands():
-    print("Dealer's Hand:", end="")
-    for i in range(0, len(dealer.hand)):
-        print(" " + dealer_hand[i] + " ", end="")
-
-    for player in players:
-        print(f"\n{player.name}'s Hand:", end="")
-
-        for i in range(0, len(player.hand)):
-            print(" " + player.hand[i] + " ", end="")
-        print('\n')
-
-
 def transfer_card(hand_1, hand_2, first_idx=None, second_idx=None):
     # Removes the card at first_idx from hand_1, and inserts it at second_idx in hand_2.
     # If no indices are specified, then a random card from hand_1 is removed and appended to the end of hand_2
@@ -45,11 +16,6 @@ def transfer_card(hand_1, hand_2, first_idx=None, second_idx=None):
         card_1 = hand_1.cards.pop(first_idx)
         hand_2.cards.insert(second_idx, card_1)
 
-
-def draw_card(hand):
-    rand_card = random.randint(0, len(play_deck.cards) - 1)
-    hand.append(play_deck.cards[rand_card])
-    play_deck.cards.pop(rand_card)
 
 def main():
     deck_skele = Hand([Card("Ace", "Clubs", [1, 11]), Card("Ace", "Diamonds", [1, 11]),
@@ -80,28 +46,25 @@ def main():
                        Card("King", "Hearts", [10]), Card("King", "Spades", [10]),
                        ])
 
-    deck_skeleton = ['♣A', '♣2', '♣3', '♣4', '♣5', '♣6', '♣7', '♣8', '♣9', '♣10', '♣J', '♣Q', '♣K',
-                     '♦A', '♦2', '♦3', '♦4', '♦5', '♦6', '♦7', '♦8', '♦9', '♦10', '♦J', '♦Q', '♦K',
-                     '♥A', '♥2', '♥3', '♥4', '♥5', '♥6', '♥7', '♥8', '♥9', '♥10', '♥J', '♥Q', '♥K',
-                     '♠A', '♠2', '♠3', '♠4', '♠5', '♠6', '♠7', '♠8', '♠9', '♠10', '♠J', '♠Q', '♠K']
-    ten_value_cards = ['♣10', '♣J', '♣Q', '♣K', '♦10', '♦J', '♦Q', '♦K', '♥10', '♥J', '♥Q', '♥K', '♠10', '♠J', '♠Q', '♠K']
+    players = []
+    num_players = int(input("Enter number of players: "))
+    idx = num_players
+    while idx > 0:
+        player_name = input("Enter your name: ")
+        print(f"Hi {player_name}, welcome to Blackjack!")
+        players.append(Player(player_name, 1000, Hand(), 0))
+        idx -= 1
+    for player in players:
+        print(player)
+    dealer = Player("Dealer", 1000, Hand(), 0)
 
-    player_has_bj = False
     dealer_has_bj = False
     game_running = True
-
-    p1_name = input("Enter your name: ")
-    print(f"Hi {p1_name}, welcome to Blackjack!")
-    players = []
-    p1 = Player(p1_name, 1000, Hand(), 0)
-    dealer = Player("dealer", 1000, Hand(), 0)
-    players.append(p1)
 
     state = 0
     while game_running:
         while state == 0:  # Betting
 
-            dealer.hand = []
             play_deck = deck_skele
 
             print(f"You have ${p1.balance} in your balance.")
@@ -114,20 +77,23 @@ def main():
             state = 1
 
         while state == 1:  # Dealing
+            dealer.hand = []
+            for player in players:
+                player.hand = []
+
             for i in range(0, 2):
-                transfer_card(play_deck.cards, p1.hand)
+                for player in players:
+                    transfer_card(play_deck.cards, p1.hand)
                 transfer_card(play_deck.cards, dealer.hand)
 
             print(dealer.hand)
             state = 2
 
         while state == 2:  # Check for natural blackjacks
-            dealer.hand.update_values()
-            for total in dealer.hand.values:
-                if total == 21:
-                    dealer_has_bj = True
-
-            if not dealer_has_bj:
+            dealer_score = dealer.hand.update_values()
+            if dealer_score == 21:
+                dealer_has_bj = True
+            else:
                 dealer_has_bj = False
 
             p1.hand.update_values()
@@ -160,7 +126,7 @@ def main():
 
             state = 3
 
-    # TODO: Fix state 3 and onward
+        # TODO: Fix state 3 and onward
         while state == 3:  # Player makes play decision
             player_score = p1.hand.update_values()
             print(f"Your total is {player_score}")
@@ -229,6 +195,7 @@ def main():
                 print(f"You win {player_bet} dollars!\n")
                 p1.balance += player_bet
                 state = 0
+
 
 if __name__ == "__main__":
     main()
