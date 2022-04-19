@@ -6,6 +6,4 @@ class Player:
         self.bet = bet
 
     def __str__(self):
-        pass
-    # TODO: complete function
-
+        return f"{self.name}, ${self.balance}"

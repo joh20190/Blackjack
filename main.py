@@ -67,12 +67,14 @@ def main():
 
             play_deck = deck_skele
 
-            print(f"You have ${p1.balance} in your balance.")
+            for player in players:
+                player.bet = 0
+                print(f"{player.name}, you have ${player.balance} in your balance.")
 
-            p1.bet = int(round(float(input("Enter your bet for the round: "))))
-            while (p1.bet % 1) != 0 or p1.bet < 0 or p1.bet > p1.balance:
-                print("Sorry, that is not a valid bet.")
-                player_bet = int(input("Enter your bet for the round: "))
+                player.bet = int(round(float(input("Enter your bet for the round: "))))
+                while (player.bet % 1) != 0 or player.bet < 0 or player.bet > player.balance:
+                    print("Sorry, that is not a valid bet.")
+                    player_bet = int(input("Enter your bet for the round: "))
 
             state = 1
 
@@ -83,7 +85,7 @@ def main():
 
             for i in range(0, 2):
                 for player in players:
-                    transfer_card(play_deck.cards, p1.hand)
+                    transfer_card(play_deck.cards, player.hand)
                 transfer_card(play_deck.cards, dealer.hand)
 
             print(dealer.hand)
@@ -96,26 +98,26 @@ def main():
             else:
                 dealer_has_bj = False
 
-            p1.hand.update_values()
-            for total in p1.hand.values:
-                if total == 21:
+            for player in players:
+                player_score = player.hand.update_values()
+                if player_score == 21:
                     player_has_bj = True
 
-            if not player_has_bj:
-                player_has_bj = False
+                if not player_has_bj:
+                    player_has_bj = False
 
-            if player_has_bj:
-                if dealer_has_bj:
-                    print_hands()
-                    print("Push!\n")
-                    state = 0
-                    break
-                else:
-                    print_hands()
-                    print(f"Blackjack! {p1_name} wins ${player_bet * 1.5}.\n")
-                    p1.balance += (player_bet * 1.5)
-                    state = 0
-                    break
+                if player_has_bj:
+                    if dealer_has_bj:
+                        print_hands()
+                        print("Push!\n")
+                        state = 0
+                        break
+                    else:
+                        print_hands()
+                        print(f"Blackjack! {p1_name} wins ${player_bet * 1.5}.\n")
+                        p1.balance += (player_bet * 1.5)
+                        state = 0
+                        break
 
             if dealer_has_bj:
                 print_hands()

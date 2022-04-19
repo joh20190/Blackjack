@@ -19,10 +19,6 @@ class Hand:
 
         return maximum
 
-    def get_score(self):
-        pass
-        # TODO finish function
-
     def __init__(self, cards=None, values=None):
         if values is None:
             self.values = []
