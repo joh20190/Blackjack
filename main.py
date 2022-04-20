@@ -17,6 +17,14 @@ def transfer_card(hand_1, hand_2, first_idx=None, second_idx=None):
         hand_2.cards.insert(second_idx, card_1)
 
 
+def print_hands():  # TODO: Finish function
+    pass
+
+
+def print_hide_dealer(): # TODO: Finish function
+    pass
+
+
 def main():
     deck_skele = Hand([Card("Ace", "Clubs", [1, 11]), Card("Ace", "Diamonds", [1, 11]),
                        Card("Ace", "Hearts", [1, 11]), Card("Ace", "Spades", [1, 11]),
@@ -52,13 +60,12 @@ def main():
     while idx > 0:
         player_name = input("Enter your name: ")
         print(f"Hi {player_name}, welcome to Blackjack!")
-        players.append(Player(player_name, 1000, Hand(), 0))
+        players.append(Player(player_name, 1000, Hand(), 0, False))
         idx -= 1
     for player in players:
         print(player)
-    dealer = Player("Dealer", 1000, Hand(), 0)
+    dealer = Player("Dealer", 1000, Hand(), 0, False)
 
-    dealer_has_bj = False
     game_running = True
 
     state = 0
@@ -88,76 +95,73 @@ def main():
                     transfer_card(play_deck.cards, player.hand)
                 transfer_card(play_deck.cards, dealer.hand)
 
-            print(dealer.hand)
+            print_hide_dealer()
             state = 2
 
         while state == 2:  # Check for natural blackjacks
+            for player in players:
+                player.has_bj = False
+            dealer.has_bj = False
+
             dealer_score = dealer.hand.update_values()
             if dealer_score == 21:
-                dealer_has_bj = True
+                dealer.has_bj = True
             else:
-                dealer_has_bj = False
+                dealer.has_bj = False
 
             for player in players:
                 player_score = player.hand.update_values()
                 if player_score == 21:
-                    player_has_bj = True
-
-                if not player_has_bj:
+                    player.has_bj = True
+                else:
                     player_has_bj = False
 
-                if player_has_bj:
-                    if dealer_has_bj:
+                if player.has_bj:
+                    if dealer.has_bj:
                         print_hands()
-                        print("Push!\n")
-                        state = 0
-                        break
-                    else:
-                        print_hands()
-                        print(f"Blackjack! {p1_name} wins ${player_bet * 1.5}.\n")
-                        p1.balance += (player_bet * 1.5)
-                        state = 0
-                        break
-
-            if dealer_has_bj:
-                print_hands()
-                print("Blackjack! Dealer wins.\n")
-                p1.balance -= player_bet
-                state = 0
-                break
+                        print(f"{player.name} pushes with the dealer.\n")
+                else:
+                    print_hands()
+                    print(f"Blackjack! {player.bet} wins ${player.bet * 1.5}.\n")
+                    player.balance += (player.bet * 1.5)
 
             state = 3
 
         # TODO: Fix state 3 and onward
         while state == 3:  # Player makes play decision
-            player_score = p1.hand.update_values()
-            print(f"Your total is {player_score}")
-            player_decision = \
-                (input("Would you like to hit or stand? (Type 'hit' or 'stand' and press enter): ")).lower().strip()
+            for player in players:
+                if not player_has_bj:
+                    player_decision = ""
+                    while player_score < 21 and player_decision != "stand":
+                        player_score = player.hand.update_values()
+                        print(f"{player.name}, your total is {player_score}")
+                        player_decision = \
+                            (input(f"{player_name}, would you like to hit or stand?"
+                                   f" (Type 'hit' or 'stand' and press enter): ")).lower().strip()
 
-            time.sleep(0.5)
+                        time.sleep(0.5)
 
-            if player_decision == "hit":
-                draw_card(p1.hand)
-            print_hide_dealer()
-            player_score = p1.hand.update_values()
+                        if player_decision == "hit":
+                            transfer_card(play_deck, player.hand)
+                        print_hide_dealer()
+                        player_score = player.hand.update_values()
 
-            if player_score == 21:
-                print_hands()
-                print(f"Blackjack! {p1_name} wins ${player_bet * 1.5}.\n")
-                p1.balance += (player_bet * 1.5)
-                state = 0
+                        if player_score == 21:
+                            print_hands()
+                            print(f"Blackjack! {p1_name} wins ${player_bet * 1.5}.\n")
+                            p1.balance += (player_bet * 1.5)
+                            state = 0
 
-            elif player_score > 21:
-                print(f"Your total is {p1.hand.update_values()}.")
-                print(f"Bust! You lose ${player_bet}.\n")
-                p1.balance -= player_bet
-                state = 0
-            else:
-                if player_decision == "stand":
-                    state = 4
-                else:
-                    state = 3
+                        elif player_score > 21:
+                            print(f"Your total is {p1.hand.update_values()}.")
+                            print(f"Bust! You lose ${player_bet}.\n")
+                            p1.balance -= player_bet
+                            state = 0
+                        else:
+                            if player_decision == "stand":
+                                state = 4
+                            else:
+                                state = 3
 
         while state == 4:  # Dealer draws cards
             print_hands()
